@@ -5,27 +5,39 @@ class Boid {
   PVector rightWing;
   float speed;
   PVector velocity;
-  float direction;
+  PVector acceleration;
   Boid() {
-    butt = new PVector(0, 0);
-    direction = random(0, 360);
-    speed = random(2, 4);
+    butt = new PVector(random(-width/2, width/2), random(-height/2, height/2));
+    velocity = new PVector(random(-2, 2), random(-2, 2));
+    //butt = new PVector(0, 0);
+    //velocity = new PVector(2, 2);
+    acceleration = new PVector(0, 0);
   }
 
-
   void fly() {
-    velocity = new PVector(cos(radians(direction)) * speed, sin(radians(direction)) * speed);
-    butt.add(velocity);
-    direction += random(-5, 5);
+    
+    velocity = velocity.add(acceleration);
+    velocity.limit(2);
+    butt = butt.add(velocity);
+    acceleration = new PVector(0, 0);
+    
   }
 
 
   void show() {
     stroke(255);
     fill(100);
-    head = new PVector(cos(radians(direction)) * 16 + butt.x, -sin(radians(direction)) * 16 - butt.y);
-    leftWing = new PVector(cos(radians(direction + 90)) * 5 + butt.x, -sin(radians(direction + 90)) * 5 - butt.y);
-    rightWing = new PVector(cos(radians(direction - 90)) * 5 + butt.x, -sin(radians(direction - 90)) * 5 - butt.y);
+    float direction = degrees(atan(velocity.y/velocity.x));
+    if(velocity.x >= 0){
+      head = new PVector(cos(radians(direction)) * 16 + butt.x, -sin(radians(direction)) * 16 - butt.y);
+      leftWing = new PVector(cos(radians(direction + 90)) * 5 + butt.x, -sin(radians(direction + 90)) * 5 - butt.y);
+      rightWing = new PVector(cos(radians(direction - 90)) * 5 + butt.x, -sin(radians(direction - 90)) * 5 - butt.y);
+    } else {
+      head = new PVector(-cos(radians(direction)) * 16 + butt.x, sin(radians(direction)) * 16 - butt.y);
+      leftWing = new PVector(cos(radians(direction + 90)) * 5 + butt.x, -sin(radians(direction + 90)) * 5 - butt.y);
+      rightWing = new PVector(cos(radians(direction - 90)) * 5 + butt.x, -sin(radians(direction - 90)) * 5 - butt.y);
+    }
+    
     triangle(head.x, head.y, leftWing.x, leftWing.y, rightWing.x, rightWing.y);
     circleAround();
   }
